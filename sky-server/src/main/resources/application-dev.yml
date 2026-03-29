@@ -6,3 +6,8 @@ sky:
     database: sky_take_out
     username: root
     password: csf2003122.
+  rustfs:
+    endpoint: http://127.0.0.1:9000
+    access-key: rustfsadmin
+    secret-key: rustfsadmin
+    bucket-name: sky-takeaway
