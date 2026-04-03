@@ -71,4 +71,11 @@ public interface DishMapper {
      * @return
      */
     List<Dish> list(Dish categoryId);
+
+    /**
+     * 根据套餐Id查询套餐下所有菜品的状态
+     * @param id
+     * @return
+     */
+    List<Integer> getStatusBySetmealId(Long id);
 }

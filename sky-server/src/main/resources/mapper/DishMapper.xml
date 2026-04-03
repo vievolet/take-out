@@ -61,4 +61,7 @@
             </if>
         </where>
     </select>
+    <select id="getStatusBySetmealId" resultType="java.lang.Integer">
+        SELECT d.status FROM dish d LEFT OUTER JOIN setmeal_dish sd ON d.id = sd.dish_id WHERE sd.setmeal_id = #{id}
+    </select>
 </mapper>

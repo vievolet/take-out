@@ -175,6 +175,11 @@ public class DishServicelmpl implements DishService {
 
     }
 
+    /**
+     * 根据菜品分类id查询对应的菜品
+     * @param categoryId
+     * @return
+     */
     @Override
     public List<Dish> list(Long categoryId) {
          Dish dish = Dish.builder()

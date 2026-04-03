@@ -49,4 +49,7 @@ public interface SetmealMapper {
      * @param ids
      */
     void deleteBatchByIds(List<Long> ids);
+
+    @AutoFill(value = OperationType.UPDATE)
+    void updateSetmeal(Setmeal setmeal);
 }
