@@ -107,9 +107,7 @@ public class DishServicelmpl implements DishService {
         //批量删除菜品表中菜品数据
         dishMapper.deleteByIds(ids);
         //批量删除菜品表中的口味数据
-
         dishFlavorMapper.deleteByDishIds(ids);
-
     }
 
     /**

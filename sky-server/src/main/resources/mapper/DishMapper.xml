@@ -15,6 +15,7 @@
         #{id}
         </foreach>
     </delete>
+
     <select id="pageQuery" resultType="com.sky.vo.DishVO">
         SELECT d.*,c.name AS category_name FROM dish d left OUTER JOIN category c ON d.category_id = c.id
         <where>
