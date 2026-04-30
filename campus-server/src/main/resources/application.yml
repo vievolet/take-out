@@ -1,0 +1,66 @@
+server:
+  port: 8080
+
+spring:
+  profiles:
+    active: dev
+  main:
+    allow-circular-references: true
+  datasource:
+    druid:
+      driver-class-name: ${campus.datasource.driver-class-name}
+      url: jdbc:mysql://${campus.datasource.host}:${campus.datasource.port}/${campus.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+      username: ${campus.datasource.username}
+      password: ${campus.datasource.password}
+  redis:
+    host: ${campus.redis.host}
+    port: ${campus.redis.port}
+    password: ${campus.redis.password}
+    database: ${campus.redis.database}
+
+  #添加文件上传大小限制，覆盖默认的1MB
+  servlet:
+    multipart:
+      # 单个文件最大10MB，满足你页面2M的要求，留足余量
+      max-file-size: 10MB
+      # 单次请求最大10MB，支持多文件上传
+      max-request-size: 10MB
+
+mybatis:
+  #mapper配置文件
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.campus.entity
+  configuration:
+    #开启驼峰命名
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    com:
+      campus:
+        mapper: debug
+        service: info
+        controller: info
+
+campus:
+  jwt:
+    # 设置jwt签名加密时使用的秘钥
+    admin-secret-key: itcast
+    # 设置jwt过期时间
+    admin-ttl: 7200000
+    # 设置前端传递过来的令牌名称
+    admin-token-name: token
+
+    user-secret-key: vievolet
+    user-ttl: 7200000
+    user-token-name: authentication
+  rustfs:
+    endpoint: ${campus.rustfs.endpoint}
+    access-key: ${campus.rustfs.access-key}
+    secret-key: ${campus.rustfs.secret-key}
+    bucket-name: ${campus.rustfs.bucket-name}
+  wechat:
+    appid: ${campus.wechat.appid}
+    secret: ${campus.wechat.secret}
+
+
