@@ -36,6 +36,9 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private ShoppingCartMapper shoppingCartMapper;
 
+    @Autowired
+    private com.campus.queue.OrderRabbitSender orderRabbitSender;
+
     /**
      * 用户下单
      * @param ordersSubmitDTO
@@ -84,6 +87,14 @@ public class OrderServiceImpl implements OrderService {
 
         shoppingCartMapper.deleteByUserId(userId);
 
+        // 发送延时消息：例如 30 分钟后检查订单是否已支付（30*60*1000 ms）
+        try {
+            orderRabbitSender.sendDelayOrder(orders.getId(), 30 * 60 * 1000L);
+        } catch (Exception e) {
+            // 发送失败不回滚下单流程，但应记录日志/报警。这里简单打印堆栈。
+            e.printStackTrace();
+        }
+
         OrderSubmitVO build = OrderSubmitVO.builder()
                 .id(orders.getId())
                 .orderTime(orders.getOrderTime())
@@ -92,5 +103,14 @@ public class OrderServiceImpl implements OrderService {
                 .build();
 
         return build;
+    }
+
+    @Override
+    public void handleTimeout(Long orderId) {
+        // 仅当订单仍处于待付款且未支付时，更新为取消，利用 mapper 的条件更新保证幂等
+        int updated = orderMapper.updateStatusToCancelledIfUnpaid(orderId, LocalDateTime.now());
+        if (updated > 0) {
+            // 执行额外的补偿逻辑，例如回滚库存或释放套餐锁定（如果有），此处留空或调用对应服务
+        }
     }
 }

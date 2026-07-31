@@ -11,4 +11,11 @@
                         #{amount}, #{remark}, #{phone}, #{address}, #{consignee}, #{estimatedDeliveryTime}, #{deliveryStatus},
                         #{packAmount}, #{tablewareNumber}, #{tablewareStatus})
     </insert>
+
+    <update id="updateStatusToCancelledIfUnpaid">
+        update orders
+        set status = 6,
+            cancel_time = #{cancelTime}
+        where id = #{id} and status = 1 and pay_status = 0
+    </update>
 </mapper>
