@@ -110,10 +110,13 @@ public class HttpClientUtil {
         } catch (Exception e) {
             throw e;
         } finally {
-            try {
-                response.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            // response 判空关闭，避免异常时 NPE
+            if (response != null) {
+                try {
+                    response.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -160,10 +163,13 @@ public class HttpClientUtil {
         } catch (Exception e) {
             throw e;
         } finally {
-            try {
-                response.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            // response 判空关闭，避免异常时 NPE
+            if (response != null) {
+                try {
+                    response.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -174,6 +180,62 @@ public class HttpClientUtil {
                 .setConnectTimeout(TIMEOUT_MSEC)
                 .setConnectionRequestTimeout(TIMEOUT_MSEC)
                 .setSocketTimeout(TIMEOUT_MSEC).build();
+    }
+
+    /**
+     * 发送POST JSON请求（支持任意 JSON 字符串 body、自定义请求头和超时）。
+     * 用于调用大模型等第三方 API（如 DeepSeek 的 /chat/completions，messages 为数组结构，
+     * 扁平 Map 拼 JSON 的 doPost4Json 无法表达）。
+     *
+     * @param url       请求地址
+     * @param jsonBody  JSON 字符串请求体
+     * @param headers   自定义请求头（可为 null）
+     * @param timeoutMs 超时时间（毫秒）
+     * @return 响应体字符串
+     */
+    public static String doPostJson(String url, String jsonBody, Map<String, String> headers, int timeoutMs) throws IOException {
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        CloseableHttpResponse response = null;
+        String resultString = "";
+
+        try {
+            HttpPost httpPost = new HttpPost(url);
+
+            StringEntity entity = new StringEntity(jsonBody, "utf-8");
+            entity.setContentEncoding("utf-8");
+            entity.setContentType("application/json");
+            httpPost.setEntity(entity);
+
+            if (headers != null) {
+                for (Map.Entry<String, String> header : headers.entrySet()) {
+                    httpPost.addHeader(header.getKey(), header.getValue());
+                }
+            }
+
+            httpPost.setConfig(RequestConfig.custom()
+                    .setConnectTimeout(timeoutMs)
+                    .setConnectionRequestTimeout(timeoutMs)
+                    .setSocketTimeout(timeoutMs).build());
+
+            response = httpClient.execute(httpPost);
+            resultString = EntityUtils.toString(response.getEntity(), "UTF-8");
+        } finally {
+            // response 判空关闭：execute 抛异常时 response 为 null，避免关闭时 NPE
+            if (response != null) {
+                try {
+                    response.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            try {
+                httpClient.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return resultString;
     }
 
 }

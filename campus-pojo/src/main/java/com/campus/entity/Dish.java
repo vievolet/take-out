@@ -36,6 +36,9 @@ public class Dish implements Serializable {
     //描述信息
     private String description;
 
+    //辣度 0不辣 1微辣 2中辣 3特辣（AI 推荐模块的结构化筛选字段）
+    private Integer spicyLevel;
+
     //0 停售 1 起售
     private Integer status;
 

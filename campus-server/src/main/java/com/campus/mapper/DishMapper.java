@@ -8,6 +8,7 @@ import com.campus.enumeration.OperationType;
 import com.campus.vo.DishVO;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -78,4 +79,15 @@ public interface DishMapper {
      * @return
      */
     List<Integer> getStatusBySetmealId(Long id);
+
+    /**
+     * AI 推荐候选菜品：起售中 + 价格/辣度/分类过滤（结构化条件，大模型不参与筛选）
+     * @param budget    预算上限（null 不过滤）
+     * @param maxSpicy  最大辣度（null 不过滤）
+     * @param categoryId 分类id（null 不过滤）
+     * @return
+     */
+    List<Dish> listForRecommend(@Param("budget") java.math.BigDecimal budget,
+                                @Param("maxSpicy") Integer maxSpicy,
+                                @Param("categoryId") Long categoryId);
 }

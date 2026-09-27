@@ -4,9 +4,13 @@
 <mapper namespace="com.campus.mapper.DishMapper">
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        insert into dish (name, category_id, price, image, description, status, create_time, update_time, create_user, update_user)
+        insert into dish (name, category_id, price, image, description, status
+        <if test="spicyLevel != null">, spicy_level</if>
+        , create_time, update_time, create_user, update_user)
         values
-            (#{name},#{categoryId},#{price},#{image},#{description},#{status},#{createTime},#{updateTime},#{createUser},#{updateUser})
+            (#{name},#{categoryId},#{price},#{image},#{description},#{status}
+        <if test="spicyLevel != null">, #{spicyLevel}</if>
+        , #{createTime},#{updateTime},#{createUser},#{updateUser})
     </insert>
 
     <delete id="deleteByIds">
@@ -41,6 +45,7 @@
             <if test="image != null">image = #{image}, </if>
             <if test="description != null">description = #{description}, </if>
             <if test="status != null">status = #{status}, </if>
+            <if test="spicyLevel != null">spicy_level = #{spicyLevel}, </if>
             <if test="updateTime != null">update_time = #{updateTime}, </if>
             <if test="updateUser != null">update_user = #{updateUser}, </if>
         </set>
@@ -63,5 +68,22 @@
     </select>
     <select id="getStatusBySetmealId" resultType="java.lang.Integer">
         SELECT d.status FROM dish d LEFT OUTER JOIN setmeal_dish sd ON d.id = sd.dish_id WHERE sd.setmeal_id = #{id}
+    </select>
+
+    <!-- AI 推荐模块：结构化过滤候选菜品（大模型不参与筛选，防止幻觉） -->
+    <select id="listForRecommend" resultType="com.campus.entity.Dish">
+        select * from dish
+        where status = 1
+        <if test="budget != null">
+            and price &lt;= #{budget}
+        </if>
+        <if test="maxSpicy != null">
+            and spicy_level &lt;= #{maxSpicy}
+        </if>
+        <if test="categoryId != null">
+            and category_id = #{categoryId}
+        </if>
+        order by price
+        limit 50
     </select>
 </mapper>

@@ -36,6 +36,9 @@ public class Setmeal implements Serializable {
     //描述信息
     private String description;
 
+    //辣度 0不辣 1微辣 2中辣 3特辣（非表字段，由套餐内菜品辣度取最大值派生，用于 AI 推荐筛选）
+    private Integer spicyLevel;
+
     //图片
     private String image;
 

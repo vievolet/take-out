@@ -8,6 +8,7 @@ import com.campus.enumeration.OperationType;
 import com.campus.vo.DishItemVO;
 import com.campus.vo.SetmealVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -70,4 +71,15 @@ public interface SetmealMapper {
             "from setmeal_dish sd left join dish d on sd.dish_id = d.id " +
             "where sd.setmeal_id = #{setmealId}")
     List<DishItemVO> getDishItemBySetmealId(Long id);
+
+    /**
+     * AI 推荐候选套餐：启售中 + 价格/分类过滤，辣度由套餐内菜品取最大值派生（group by 全列显式写出，兼容 only_full_group_by）
+     * @param budget    预算上限（null 不过滤）
+     * @param maxSpicy  最大辣度（null 不过滤）
+     * @param categoryId 分类id（null 不过滤）
+     * @return
+     */
+    List<Setmeal> listForRecommend(@Param("budget") java.math.BigDecimal budget,
+                                   @Param("maxSpicy") Integer maxSpicy,
+                                   @Param("categoryId") Long categoryId);
 }

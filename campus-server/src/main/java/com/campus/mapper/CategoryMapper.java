@@ -8,6 +8,7 @@ import com.campus.entity.Category;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 import java.util.List;
 
 @Mapper
@@ -50,4 +51,12 @@ public interface CategoryMapper {
      * @return
      */
     List<Category> list(Integer type);
+
+    /**
+     * 根据名称查菜品分类id（AI 推荐参数中的品类名解析用，查不到返回 null）
+     * @param name
+     * @return
+     */
+    @Select("select id from category where name = #{name} and type = 1")
+    Long getDishCategoryIdByName(String name);
 }
