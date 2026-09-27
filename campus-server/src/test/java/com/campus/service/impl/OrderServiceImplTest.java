@@ -118,7 +118,7 @@ class OrderServiceImplTest {
 
         verify(orderDetailMapper).insertBatch(anyList());
         verify(shoppingCartMapper).deleteByUserId(1L);
-        verify(orderRabbitSender).sendDelayOrder(eq(100L), anyLong());
+        verify(orderRabbitSender).sendDelayOrder(eq(100L));
     }
 
     /**

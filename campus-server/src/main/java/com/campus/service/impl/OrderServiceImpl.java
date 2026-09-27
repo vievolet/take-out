@@ -69,13 +69,6 @@ public class OrderServiceImpl implements OrderService {
     private WebSocketServer webSocketServer;
 
     /**
-     * 订单支付超时时间（毫秒），超时未支付由延时队列自动取消。
-     * 可配置，演示时临时改小（如 60000）即可快速看到延时关单效果
-     */
-    @Value("${campus.order.pay-timeout-ms:1800000}")
-    private long payTimeoutMs;
-
-    /**
      * mock 支付模式下调用支付接口即视为支付成功（模拟真实用户完成支付后的回调）。
      * 置为 false 时，需手动调 /user/order/payment/mock-notify 模拟微信回调
      */
@@ -137,9 +130,9 @@ public class OrderServiceImpl implements OrderService {
 
         shoppingCartMapper.deleteByUserId(userId);
 
-        // 发送延时消息：支付超时未支付则自动取消（TTL 可配置）
+        // 发送延时消息：支付超时未支付则自动取消（超时时间由延时队列的队列级 TTL 控制，见 RabbitConfig）
         try {
-            orderRabbitSender.sendDelayOrder(orders.getId(), payTimeoutMs);
+            orderRabbitSender.sendDelayOrder(orders.getId());
         } catch (Exception e) {
             // 发送失败不回滚下单流程，但记录日志（可扩展报警/补偿扫描）
             log.error("订单延时消息发送失败：orderId={}", orders.getId(), e);

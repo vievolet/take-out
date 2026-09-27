@@ -1,3 +1,8 @@
+-- 校园外卖建库脚本：全新环境执行一次即可（幂等，可重复执行）
+CREATE DATABASE IF NOT EXISTS sky_take_out DEFAULT CHARACTER SET utf8mb3;
+USE sky_take_out;
+
+DROP TABLE IF EXISTS `address_book`;
 CREATE TABLE `address_book` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
   `user_id` bigint NOT NULL COMMENT '用户id',
@@ -16,6 +21,7 @@ CREATE TABLE `address_book` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb3 COLLATE=utf8_bin COMMENT='地址簿';
 
+DROP TABLE IF EXISTS `category`;
 DROP TABLE IF EXISTS `category`;
 CREATE TABLE `category` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
@@ -42,6 +48,7 @@ INSERT INTO `category` VALUES (19,1,'新鲜时蔬',7,1,'2022-06-09 22:18:12','20
 INSERT INTO `category` VALUES (20,1,'水煮鱼',8,1,'2022-06-09 22:22:29','2022-06-09 22:23:45',1,1);
 INSERT INTO `category` VALUES (21,1,'汤类',11,1,'2022-06-10 10:51:47','2022-06-10 10:51:47',1,1);
 
+DROP TABLE IF EXISTS `dish`;
 DROP TABLE IF EXISTS `dish`;
 CREATE TABLE `dish` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
@@ -86,6 +93,7 @@ INSERT INTO `dish` VALUES (68,'鸡蛋汤',21,4.00,'https://sky-itcast.oss-cn-bei
 INSERT INTO `dish` VALUES (69,'平菇豆腐汤',21,6.00,'https://sky-itcast.oss-cn-beijing.aliyuncs.com/16d0a3d6-2253-4cfc-9b49-bf7bd9eb2ad2.png','配料：豆腐，平菇',1,0,'2022-06-10 10:55:02','2022-06-10 10:55:02',1,1);
 
 DROP TABLE IF EXISTS `dish_flavor`;
+DROP TABLE IF EXISTS `dish_flavor`;
 CREATE TABLE `dish_flavor` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
   `dish_id` bigint NOT NULL COMMENT '菜品',
@@ -120,6 +128,7 @@ INSERT INTO `dish_flavor` VALUES (102,67,'辣度','[\"不辣\",\"微辣\",\"中�
 INSERT INTO `dish_flavor` VALUES (103,65,'辣度','[\"不辣\",\"微辣\",\"中辣\",\"重辣\"]');
 
 DROP TABLE IF EXISTS `employee`;
+DROP TABLE IF EXISTS `employee`;
 CREATE TABLE `employee` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
   `name` varchar(32) COLLATE utf8_bin NOT NULL COMMENT '姓名',
@@ -137,8 +146,9 @@ CREATE TABLE `employee` (
   UNIQUE KEY `idx_username` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb3 COLLATE=utf8_bin COMMENT='员工信息';
 
-INSERT INTO `employee` VALUES (1,'管理员','admin','123456','13812312312','1','110101199001010047',1,'2022-02-15 15:51:20','2022-02-17 09:16:20',10,1);
+INSERT INTO `employee` VALUES (1,'管理员','admin','e10adc3949ba59abbe56e057f20f883e','13812312312','1','110101199001010047',1,'2022-02-15 15:51:20','2022-02-17 09:16:20',10,1);
 
+DROP TABLE IF EXISTS `order_detail`;
 DROP TABLE IF EXISTS `order_detail`;
 CREATE TABLE `order_detail` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
@@ -153,6 +163,7 @@ CREATE TABLE `order_detail` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb3 COLLATE=utf8_bin COMMENT='订单明细表';
 
+DROP TABLE IF EXISTS `orders`;
 DROP TABLE IF EXISTS `orders`;
 CREATE TABLE `orders` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
@@ -183,6 +194,7 @@ CREATE TABLE `orders` (
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3 COLLATE=utf8_bin COMMENT='订单表';
 
 DROP TABLE IF EXISTS `setmeal`;
+DROP TABLE IF EXISTS `setmeal`;
 CREATE TABLE `setmeal` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
   `category_id` bigint NOT NULL COMMENT '菜品分类id',
@@ -200,6 +212,7 @@ CREATE TABLE `setmeal` (
 ) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb3 COLLATE=utf8_bin COMMENT='套餐';
 
 DROP TABLE IF EXISTS `setmeal_dish`;
+DROP TABLE IF EXISTS `setmeal_dish`;
 CREATE TABLE `setmeal_dish` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
   `setmeal_id` bigint DEFAULT NULL COMMENT '套餐id',
@@ -210,6 +223,7 @@ CREATE TABLE `setmeal_dish` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb3 COLLATE=utf8_bin COMMENT='套餐菜品关系';
 
+DROP TABLE IF EXISTS `shopping_cart`;
 DROP TABLE IF EXISTS `shopping_cart`;
 CREATE TABLE `shopping_cart` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
@@ -226,6 +240,7 @@ CREATE TABLE `shopping_cart` (
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb3 COLLATE=utf8_bin COMMENT='购物车';
 
 DROP TABLE IF EXISTS `user`;
+DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
   `openid` varchar(45) COLLATE utf8_bin DEFAULT NULL COMMENT '微信用户唯一标识',
@@ -238,6 +253,7 @@ CREATE TABLE `user` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3 COLLATE=utf8_bin COMMENT='用户信息';
 
+DROP TABLE IF EXISTS `ai_recommend_log`;
 DROP TABLE IF EXISTS `ai_recommend_log`;
 CREATE TABLE `ai_recommend_log` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
