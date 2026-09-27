@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.campus.mapper.ReportMapper">
+
+    <select id="sumTurnover" resultType="java.lang.Double">
+        select ifnull(sum(amount), 0) from orders
+        where status = 5 and checkout_time between #{begin} and #{end}
+    </select>
+
+    <select id="countValidOrders" resultType="java.lang.Integer">
+        select count(id) from orders
+        where status = 5 and checkout_time between #{begin} and #{end}
+    </select>
+
+    <select id="countTotalOrders" resultType="java.lang.Integer">
+        select count(id) from orders
+        where order_time between #{begin} and #{end}
+    </select>
+
+    <select id="countNewUsers" resultType="java.lang.Integer">
+        select count(id) from user
+        where create_time between #{begin} and #{end}
+    </select>
+
+    <select id="totalUsersBefore" resultType="java.lang.Integer">
+        select count(id) from user
+        where create_time &lt; #{begin}
+    </select>
+
+    <select id="turnoverByDate" resultType="java.util.Map">
+        select date_format(checkout_time, '%Y-%m-%d') date, sum(amount) turnover
+        from orders
+        where status = 5 and checkout_time between #{begin} and #{end}
+        group by date_format(checkout_time, '%Y-%m-%d')
+    </select>
+
+    <select id="newUsersByDate" resultType="java.util.Map">
+        select date_format(create_time, '%Y-%m-%d') date, count(id) num
+        from user
+        where create_time between #{begin} and #{end}
+        group by date_format(create_time, '%Y-%m-%d')
+    </select>
+
+    <select id="ordersByDate" resultType="java.util.Map">
+        select date_format(order_time, '%Y-%m-%d') date,
+               count(id) orderCount,
+               sum(case when status = 5 then 1 else 0 end) validCount
+        from orders
+        where order_time between #{begin} and #{end}
+        group by date_format(order_time, '%Y-%m-%d')
+    </select>
+
+    <select id="salesTop10" resultType="com.campus.dto.GoodsSalesDTO">
+        select od.name, sum(od.number) number
+        from order_detail od left join orders o on od.order_id = o.id
+        where o.status = 5 and o.checkout_time between #{begin} and #{end}
+        group by od.name
+        order by number desc
+        limit 0, 10
+    </select>
+
+    <select id="orderOverView" resultType="com.campus.vo.OrderOverViewVO">
+        select ifnull(sum(case when status = 2 then 1 else 0 end), 0) as waitingOrders,
+               ifnull(sum(case when status = 3 then 1 else 0 end), 0) as deliveredOrders,
+               ifnull(sum(case when status = 5 then 1 else 0 end), 0) as completedOrders,
+               ifnull(sum(case when status = 6 then 1 else 0 end), 0) as cancelledOrders,
+               count(id) as allOrders
+        from orders
+    </select>
+
+    <select id="dishOverView" resultType="com.campus.vo.DishOverViewVO">
+        select ifnull(sum(case when status = 1 then 1 else 0 end), 0) as sold,
+               ifnull(sum(case when status = 0 then 1 else 0 end), 0) as discontinued
+        from dish
+    </select>
+
+    <select id="setmealOverView" resultType="com.campus.vo.SetmealOverViewVO">
+        select ifnull(sum(case when status = 1 then 1 else 0 end), 0) as sold,
+               ifnull(sum(case when status = 0 then 1 else 0 end), 0) as discontinued
+        from setmeal
+    </select>
+
+</mapper>
