@@ -5,12 +5,45 @@
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         insert into orders (number, status, user_id, address_book_id, order_time, checkout_time, pay_method, pay_status,
-                            amount, remark, phone, address, consignee,estimated_delivery_time, delivery_status,
+                            amount, remark, phone, address, consignee, user_name, estimated_delivery_time, delivery_status,
                             pack_amount, tableware_number, tableware_status)
         values (#{number}, #{status}, #{userId}, #{addressBookId}, #{orderTime}, #{checkoutTime}, #{payMethod}, #{payStatus},
-                        #{amount}, #{remark}, #{phone}, #{address}, #{consignee}, #{estimatedDeliveryTime}, #{deliveryStatus},
+                        #{amount}, #{remark}, #{phone}, #{address}, #{consignee}, #{userName}, #{estimatedDeliveryTime}, #{deliveryStatus},
                         #{packAmount}, #{tablewareNumber}, #{tablewareStatus})
     </insert>
+
+    <select id="getById" resultType="com.campus.entity.Orders">
+        select * from orders where id = #{id}
+    </select>
+
+    <select id="getByNumber" resultType="com.campus.entity.Orders">
+        select * from orders where number = #{number}
+    </select>
+
+    <select id="pageQuery" resultType="com.campus.entity.Orders">
+        select * from orders
+        <where>
+            <if test="number != null and number != ''">
+                and number like concat('%',#{number},'%')
+            </if>
+            <if test="phone != null and phone != ''">
+                and phone like concat('%',#{phone},'%')
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="beginTime != null">
+                and order_time &gt;= #{beginTime}
+            </if>
+            <if test="endTime != null">
+                and order_time &lt;= #{endTime}
+            </if>
+        </where>
+        order by order_time desc
+    </select>
 
     <update id="updateStatusToCancelledIfUnpaid">
         update orders
@@ -18,4 +51,38 @@
             cancel_time = #{cancelTime}
         where id = #{id} and status = 1 and pay_status = 0
     </update>
+
+    <update id="markPaid">
+        update orders
+        set status = 2,
+            pay_status = 1,
+            checkout_time = #{checkoutTime},
+            pay_method = #{payMethod}
+        where id = #{id} and status = 1 and pay_status = 0
+    </update>
+
+    <update id="updateWithGuard">
+        update orders
+        <set>
+            <if test="orders.status != null">status = #{orders.status},</if>
+            <if test="orders.payStatus != null">pay_status = #{orders.payStatus},</if>
+            <if test="orders.cancelReason != null">cancel_reason = #{orders.cancelReason},</if>
+            <if test="orders.rejectionReason != null">rejection_reason = #{orders.rejectionReason},</if>
+            <if test="orders.cancelTime != null">cancel_time = #{orders.cancelTime},</if>
+            <if test="orders.checkoutTime != null">checkout_time = #{orders.checkoutTime},</if>
+            <if test="orders.deliveryTime != null">delivery_time = #{orders.deliveryTime},</if>
+            <if test="orders.payMethod != null">pay_method = #{orders.payMethod},</if>
+        </set>
+        where id = #{orders.id}
+        <if test="expectStatus != null">and status = #{expectStatus}</if>
+    </update>
+
+    <select id="statistics" resultType="com.campus.vo.OrderStatisticsVO">
+        select
+            ifnull(sum(case when status = 2 then 1 else 0 end), 0) as toBeConfirmed,
+            ifnull(sum(case when status = 3 then 1 else 0 end), 0) as confirmed,
+            ifnull(sum(case when status = 4 then 1 else 0 end), 0) as deliveryInProgress
+        from orders
+    </select>
+
 </mapper>
