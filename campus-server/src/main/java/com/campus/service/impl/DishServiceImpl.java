@@ -27,7 +27,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class DishServicelmpl implements DishService {
+public class DishServiceImpl implements DishService {
 
     @Autowired
     private DishMapper dishMapper;

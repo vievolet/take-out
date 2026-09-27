@@ -29,7 +29,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class SetmealServicelmpl implements SetmealService {
+public class SetmealServiceImpl implements SetmealService {
 
     @Autowired
     private SetmealMapper setmealMapper;

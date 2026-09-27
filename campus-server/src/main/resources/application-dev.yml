@@ -5,7 +5,8 @@ campus:
     port: 3306
     database: sky_take_out
     username: root
-    password: csf2003122.
+    # 数据库密码通过环境变量 MYSQL_PASSWORD 注入（旧密码曾提交到公开仓库，建议同时去 MySQL 改掉该密码）
+    password: ${MYSQL_PASSWORD:}
   rustfs:
     endpoint: http://127.0.0.1:9000
     access-key: rustfsadmin

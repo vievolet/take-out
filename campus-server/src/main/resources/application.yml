@@ -4,8 +4,6 @@ server:
 spring:
   profiles:
     active: dev
-  main:
-    allow-circular-references: true
   datasource:
     druid:
       driver-class-name: ${campus.datasource.driver-class-name}
@@ -62,5 +60,20 @@ campus:
   wechat:
     appid: ${campus.wechat.appid}
     secret: ${campus.wechat.secret}
+  pay:
+    # 支付网关模式：mock = 模拟支付（默认，个人开发者无微信商户号）；real = 真实微信支付V3（需配置商户号/证书）
+    mode: mock
+    # mock 模式下调用支付接口即视为支付成功（模拟真实回调）；false 时需手动调 /user/order/payment/mock-notify 模拟回调
+    mock-auto-pay: true
+  order:
+    # 订单支付超时时间（毫秒），默认30分钟；演示时可临时改小（如 60000）快速观察延时关单
+    pay-timeout-ms: 1800000
+  ai:
+    # AI 点餐推荐（DeepSeek，OpenAI 兼容协议，换任意兼容厂商只需改这三个配置）
+    base-url: https://api.deepseek.com
+    model: deepseek-chat
+    # API Key 通过环境变量 CAMPUS_AI_API_KEY 注入；未配置时推荐接口自动降级为规则推荐
+    api-key: ${CAMPUS_AI_API_KEY:}
+    timeout-ms: 30000
 
 

@@ -1,10 +1,13 @@
 package com.campus.service.impl;
 
+import com.campus.constant.MessageConstant;
+import com.campus.constant.StatusConstant;
 import com.campus.context.BaseContext;
 import com.campus.dto.ShoppingCartDTO;
 import com.campus.entity.Dish;
 import com.campus.entity.Setmeal;
 import com.campus.entity.ShoppingCart;
+import com.campus.exception.ShoppingCartBusinessException;
 import com.campus.mapper.DishMapper;
 import com.campus.mapper.SetmealMapper;
 import com.campus.mapper.ShoppingCartMapper;
@@ -48,6 +51,10 @@ public class ShoppingCartServiceImpl implements ShoppingCartService{
             if(dishId != null){
                 //菜品
                 Dish dish = dishMapper.getById(dishId);
+                //校验菜品存在且起售中，停售/下架菜品不允许加入购物车
+                if (dish == null || !StatusConstant.ENABLE.equals(dish.getStatus())) {
+                    throw new ShoppingCartBusinessException(MessageConstant.DISH_NOT_ON_SALE);
+                }
                 shoppingCart.setName(dish.getName());
                 shoppingCart.setImage(dish.getImage());
                 shoppingCart.setAmount(dish.getPrice());
@@ -55,6 +62,10 @@ public class ShoppingCartServiceImpl implements ShoppingCartService{
                 //套餐
                 Long setmealId = shoppingCartDTO.getSetmealId();
                 Setmeal setmeal = setmealMapper.getById(setmealId);
+                //校验套餐存在且启售中
+                if (setmeal == null || !StatusConstant.ENABLE.equals(setmeal.getStatus())) {
+                    throw new ShoppingCartBusinessException(MessageConstant.SETMEAL_NOT_ON_SALE);
+                }
 
                 shoppingCart.setName(setmeal.getName());
                 shoppingCart.setImage(setmeal.getImage());
