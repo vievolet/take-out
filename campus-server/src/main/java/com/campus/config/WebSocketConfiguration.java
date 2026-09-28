@@ -10,9 +10,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.server.HandshakeInterceptor;
-import org.springframework.web.servlet.HandlerMapping;
 
-import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -36,10 +34,12 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
                     @Override
                     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
                                                    WebSocketHandler wsHandler, Map<String, Object> attributes) {
-                        // 从 URI 模板变量中取出 cid，作为会话 key 存入 attributes
-                        Map<String, String> uriVars = (Map<String, String>) attributes.getOrDefault(
-                                HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, Collections.emptyMap());
-                        attributes.put("cid", uriVars.get("cid"));
+                        // 从握手 URI 路径中解析 cid（/ws/{cid}），作为会话 key 存入 attributes。
+                        // 注意：URI 模板变量是 Spring MVC 的机制，WebSocket 握手阶段不存在于 attributes 中，
+                        // 必须直接解析 request URI（踩坑修复）
+                        String path = request.getURI().getPath();
+                        String cid = path.substring(path.lastIndexOf('/') + 1);
+                        attributes.put("cid", cid);
                         return true;
                     }
 
