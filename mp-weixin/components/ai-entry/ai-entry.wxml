@@ -1,0 +1,4 @@
+<view class="ai-entry" bindtap="goAi">
+  <text class="ai-icon">🤖</text>
+  <text class="ai-text">AI点餐</text>
+</view>

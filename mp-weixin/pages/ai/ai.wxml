@@ -1,0 +1,45 @@
+<view class="page">
+  <view class="banner">
+    <view class="banner-title">🤖 AI 智能点餐</view>
+    <view class="banner-sub">说出你的需求，大模型帮你搭配</view>
+  </view>
+
+  <view class="panel">
+    <textarea class="query-input" value="{{query}}" bindinput="onInput" maxlength="200"
+      placeholder="例如：推荐50块以内不辣的双人餐" auto-height></textarea>
+    <view class="chips">
+      <view class="chip" data-text="推荐50块以内不辣的双人餐" bindtap="onExample">50元以内不辣双人餐</view>
+      <view class="chip" data-text="想吃清淡一点的汤类" bindtap="onExample">清淡汤类</view>
+      <view class="chip" data-text="两个人吃，人均不超过40，微辣可以接受" bindtap="onExample">人均40微辣</view>
+    </view>
+    <button class="go-btn" loading="{{loading}}" bindtap="onRecommend">{{loading ? '推荐中…' : '开始推荐'}}</button>
+  </view>
+
+  <view class="result" wx:if="{{result}}">
+    <view class="result-head">
+      <text class="badge {{result.fallback ? 'badge-fallback' : 'badge-ai'}}">
+        {{result.fallback ? '规则降级模式' : '大模型推荐'}}
+      </text>
+      <text class="total">总价 <text class="total-price">¥{{result.totalPrice}}</text></text>
+    </view>
+    <view class="summary">{{result.summary}}</view>
+
+    <view class="item" wx:for="{{result.items}}" wx:key="index">
+      <image class="item-img" src="{{item.image}}" mode="aspectFill"></image>
+      <view class="item-info">
+        <view class="item-name">{{item.name}}<text class="item-spicy"> · {{item.spicyText}}</text></view>
+        <view class="item-reason">{{item.reason}}</view>
+        <view class="item-bottom">
+          <text class="item-price">¥{{item.price}}</text>
+          <text class="item-qty">×{{item.quantity}}</text>
+        </view>
+      </view>
+      <view class="item-btn" data-dish-id="{{item.dishId}}" data-setmeal-id="{{item.setmealId}}"
+        data-name="{{item.name}}" bindtap="onAddCart">加购</view>
+    </view>
+
+    <button class="add-all" bindtap="onAddAll">全部加入购物车</button>
+  </view>
+
+  <view class="tip">提示：大模型调用失败或无 API Key 时自动降级为规则推荐（fallback 标记），接口永远可用</view>
+</view>
